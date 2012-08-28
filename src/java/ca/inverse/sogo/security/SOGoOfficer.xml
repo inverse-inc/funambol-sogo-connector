@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.4.0" class="java.beans.XMLDecoder">
+    <object class="ca.inverse.sogo.security.SOGoOfficer">
+    
+        <void property="host">
+            <string>localhost</string>
+        </void>
+        <void property="port">
+            <string>20000</string>
+        </void>
+         
+    </object>
+</java>

@@ -1,0 +1,367 @@
+2012-08-28  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* Moved to GitHub.
+
+2012-08-27  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* Added a work-around for all-day events on
+	BlackBerry devices with the Funambol client,
+	which is a real piece of crap.
+
+2011-04-18  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+        * Dropped common-configurations as a requirement
+	and also dropped the handling of old plist handling
+	for user preferences / settings. We now rely only
+	on JSON data.
+
+2011-04-17  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* Fixed the TRANSP property handly for events
+	* Fixed the update methods in the event and task
+	classes to correctly pull the last-modification
+	timestamp prior the merge.
+
+2010-11-15  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoTaskUtilities.java
+	Added a patch from joh@bo-tech.de to fix completion statut
+	retrieval from various Funambol version
+
+2010-11-11  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+        * We now convert relative alarms to absolute
+	ones when downgrading vCalendar from v2 to v1
+
+2010-07-27  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoUtilities.java
+	Fixed the conversion of recurring events for SIF-E
+
+2010-07-20  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* Modified the getUpdatedSyncItemKeys to NOT include
+	the start time (> instead of >=) - this avoids pulling
+	back contacts that have been added/modified right after
+	they were sent using a mobile device.
+	* Added a PHOTO sync workaround for the iPhone before
+	the data is being sent to the SOGo database.
+
+2010-07-17  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoSanitizer.java
+	Commented out the BlackBerry fields inversion code
+	as it seems to be fixed in 8.5.x
+	Also removed BlackBerry PHOTO stripping
+
+2010-07-06  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoSyncSource.java
+	Improved the slow sync code by really making sure a 
+	name / firstname / lastname is defined prior to
+	doing the comparison
+
+2010-07-01  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* We now strip the PHOTO tag only for cards coming
+	from the BlackBerry devices. This is due to a bug
+	in the base64 encoder of that device.
+	* Improved the vCard 3.0 -> 2.1 conversion, especially
+	for notes containing \r\n in them.
+	* Work around a field inversion bug from BB devices
+	(using the Funambol BlackBerry client)
+
+2010-06-04  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* Added some sanity checks when checking ACLs
+	for "personal" folders
+	* Improved the conversion of vCard v3 -> v2.1
+	when dealing with non-ASCII characters. We
+	keep using UTF-8 for the iPhone but for other
+	devices, we encode everything in QP.
+
+2010-05-24  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoUtilities.java
+	SIFTovCalendar(): removed hack that was wiping the access
+	class since that bug has been fixed in Funambol (at least, from v8.0)
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoUtilities.java
+	vCardV3toV21(): improved the conversion by checking if the
+	device that syncs is an iPhone. If so, we toy around with
+	some fields.
+
+2010-05-21  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+        * Added a patch from Håvard Wigtil <havardw@pvv.org> that
+	fixes calendar sync tags getting duplicated
+
+2010-05-13  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoSanitizer.java
+	We now strip any PHOTO tag we see
+	* src/java/ca/inverse/sogo/engine/source/SOGoUtilities.java
+	Modified the vCard 3 -> 2.1 converter in order to keep
+	as much as possible various "types" (of emails, telephones
+	numbers, etc.) across synchronizations and devices.
+	* Added a patch from Håvard Wigtil <havardw@pvv.org>
+	that cleanups various stuff such as:
+	  1. serialVersionUid should be private
+	  2. Content type versions are wrong (at least if they refer to vCalendar and iCalendar)
+	  3. There should probably be no else after SIF check 
+	* src/java/ca/inverse/sogo/engine/source/SOGoUtilities.java
+	Added a patch from Håvard Wigtil <havardw@pvv.org> that
+	tries to keep the alarm definition during v2 -> v1 conversion
+	of iCalendar data.
+
+2010-04-14  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+        * Added a patch from Håvard Wigtil <havardw@pvv.org>
+	that fixes lines folding issues.
+
+2010-04-09  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+        * Added a patch from Håvard Wigtil <havardw@pvv.org>
+	that cleans the vCalendar <-> iCalendar mess.
+
+2010-04-05  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoSanitizer.java
+	We avoid stripping "empty" properties followed by folded
+	lines (usually base64-encoded cruft).
+
+2010-03-18  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+        * Added a patch from Håvard Wigtil <havardw@pvv.org>
+	to consider correctly task status and priority.
+	
+	* Added a patch from Håvard Wigtil <havardw@pvv.org>
+	to turn off auto-commit if enabled from the db driver.
+
+	* Added a patch from Håvard Wigtil <havardw@pvv.org>
+	to correctly log all exception's stacktrace to
+	the ds-server.log file.
+
+	* Added sanitizevCardOutput() to cleanup the mess
+	clients send us before injecting the data in the
+	SOGo database. We now also strip in this new
+	method (and its sanitizevCardInput() counterpart)
+	the empty attributes which create a lot of
+	confusion for SOGo/Thunderbird and clients in general.
+
+
+2010-03-08  Ludovic Marcotte <lmarcotte@inverse.ca>
+
+	* Added a patch from Håvard Wigtil <havardw@pvv.org>
+	which tries to use the event/task's creation/modification
+	date (or the item's one) for event/task/contact instead
+	of just the current local time. This avoid getting
+	back from the server newly created objects from
+	the mobile device.
+
+2010-02-19  Ludovic Marcotte <ludovic@inverse.ca>
+
+	* We now honor the access class that can be
+	specified in events / tasks.
+	* Added a patch from Albrecht Gebhardt <albrecht.gebhardt@algepop.net>
+	to support combined event / task sync sources.
+	* Fixed timezone issues
+	* Released v1.0.7
+
+2010-02-16  Ludovic Marcotte <ludovic@inverse.ca>
+
+        * Added patch from Albrecht Gebhardt <albrecht.gebhardt@algepop.net>
+	which fixes various issues with alarms and b64 encoding.
+	* Cleaned up some warnings.
+
+2010-01-06  Ludovic Marcotte <ludovic@inverse.ca>
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoContactUtilities.java
+	Make sure we use the givenName + sn if displayName is null
+
+	* src/java/ca/inverse/sogo/engine/source/SOGoSyncSource.java
+	When removing items, make sure we update the c_lastmodified
+	column so WebDAV sync works properly. 
+
+2009-12-10  Ludovic Marcotte <ludovic@inverse.ca>
+
+        * Replaced the JSON parser since the original
+	version was quite stupid
+	* Added merge capabilities for events and tasks.
+	The code is there for contacts but needs some
+	more love.
+
+2009-11-30  Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Added JSON supports for defaults / settings
+	coming out from the database.
+	* We now correctly strip the tag name when inserting
+	the calendar content in the datatabase
+	* We now allow the synchronization of personal calendars
+	from other users.
+	* Reworked getPreferredEmail() to not return empty content
+
+2009-09-21  Ludovic Marcotte <ludovic@inverse.ca>
+
+	* We now always return the items encoded in
+	base64 to avoid SIF exceptions.
+
+
+2009-08-18	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Added tag-based support for synchronizing
+	multiple calendars.
+	* Got rid of old code that was no longer used
+	as we moved to Funambol v7.1.
+
+
+2009-06-09	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Added compatibility for Funambol 7.x
+	* Added support for MySQL
+	* Fixed small bugs there and there	
+
+
+2008-07-23	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Added missing SOGoUser.java file
+
+
+2008-07-07	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* We now require a TCP port to be specified in SOGoOfficer.xml
+	  Normally, this should be the host/port of a 'sogod' instance.
+	* Vastly improved the SOGo sanitizer. It was incorrectly adding UID
+	  fields and the line folding code wasn't 100% accurate.
+	* We now also always unfold the ATTENDEE lines before Funambol
+	  reads them to avoid parsing exceptions in Funambol.
+	* Fixed bugs in the RRULE parser
+
+
+2008-05-21	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Cleanups for various warnings
+	* Release of v1.0.4
+
+
+2008-05-20	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Fixed a small bug in N: addition in case parameters were
+	  added to the initial attribute.
+	* Reimplemented getSyncItemKeysFromTwin()
+	* Refactored / simplified some code
+	
+
+2008-04-01	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Added a hack in the SIF-{E,T} -> vCalendar
+	  converter to avoid exceptions in Funambol v6.5 with
+	  events containing an access class attribute.
+	* Updated the code to reflect database schema changes
+	  in SOGo.
+	* Modified SOGoUtilities: -getUserTimeZone() to avoid
+	  throwing an exception in case no user-timezone is set.
+	  We also log a warning if that's the case.
+	* We now close all resultsets to avoid cursor leakage
+	  in Oracle.
+	* Implemented getSyncItemKeysFromTwin() 
+	* Modified updateSyncItem() so that we skip updates
+	  during a slow sync to avoid "losing" data on the
+	  server as we don't do any merge right now.
+	* Improved / fixed the SIF -> vCalendar code and
+	  we no longer assume that the first item is an
+	  event / todo when converting a vCalendar to
+	  a SIF event / task.
+	  
+	
+2008-02-08  Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Updated the PIM framework to v6.5.6
+	* Modified vCardV3toV21() so that we check
+	  if the 'N' property was defined. If not, we
+	  set it to 'Unknown'.
+	* Imported the S4jPropertyConverter class from Funambol
+	  into our connector (as SOGoPropertyConverter) as we
+	  make use of it an it's supposedly deprecated but
+	  no-one @ Funambol could give us an intelligent response.
+	* We now strip the DTSTAMP attribute and we convert the TRANSP
+	  attribute to the vCalendar v1 format in our sanitizer.
+	* Funambol accounts are now automatically created for users
+	  able to authenticate to a SOGo server. This is now done
+	  with the new SOGo Officer. See the README for all details.
+	* Added an output "sanitizer" for vCalendar information in order
+	  to avoid client-side bugs (such as "AALARM:;;;" on SyncJe
+	  v2.37 and earlier).
+
+
+2007-11-23 	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Fixed addvTodoSyncItem() to set c_isopaque to
+	  a non-NULL value.
+	* We now also sanitize task's input before
+	  an insert / update.
+	* We now also call sanitizevCalendarInput() before
+	  converting items from v2 to v1.
+	* We now check if the device supports UTC before
+	  inserting/updating tasks and if now, we adjust
+	  the start/due dates based on the user's time zone.
+	* Fixed an issue for taks in vCalendarv2Tov1 and
+	  improved its robustness.
+
+
+2007-11-09 	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Implemented support for recurring events and
+	  conversion of RRULE:s from/to v1/v2
+	* We no longer encode/decode our keys as URLs
+	  since Lightning breaks on them. Keys starting
+	  with ./ were re-encoded with .%2F but Lightning
+	  would duplicate events upon modification. For example,
+	  ".%2Ffoobar" would be re-encoded as "foobar".
+	* Optimized SOGoSyncSource: updateSyncItem().
+	* Improved the sanitizers to avoid tons of bugs in
+	  connecting clients.
+	* Improved the cleanness of our v2.0 -> v1.0
+	  calendar converter.
+
+
+2007-11-01	Ludovic Marcotte <ludovic@inverse.ca>	
+
+	* Fixed encoding issues with contacts and events during
+	  conversion to older standards
+	* Fixed the c_version changes after an update on contacts,
+	  events or tasks.
+	* Fixed tz issues wrt all-day events and start/end dates
+	  in the _quick tables.
+	* Modified SOGoSyncSource: init() so that we correctly
+	  adjust the supported Content-Type:s since some clients,
+	  like Synthesis SyncML do require that.
+	* Introduced methods to fix input content to avoid ugly
+	  crashes in Funambol. See:
+	  http://forge.objectweb.org/tracker/?group_id=96&atid=100096&func=detail&aid=307471
+	* Introduce methods to fix output content to avoid
+	  compatibilities with various SyncML clients.
+	* We now require
+	   - Funambol v6.5 or later
+	   - Funambol Outlook Plug-in v6.5.1 or later
+
+
+2007-09-04	Ludovic Marcotte <ludovic@inverse.ca>
+	
+	* Complete SIF support was added
+	* Fixed the JDK requirements in build.xml
+	* We now consider the user's time zone when manipulating
+	  date information. Apache commons collections, configuration
+	  and lang are now REQUIRED. You can place the jar files in
+	  Funambol/tools/tomcat/common/lib/.
+    * Oracle database support
+    * Fixed the time zone issues with events coming from
+      Mozilla Sunbird or Mozilla Lightning (TZID in DTSTART/DTEND)
+	
+
+2007-08-24	Ludovic Marcotte <ludovic@inverse.ca>
+
+	* Initial release (v1.0.0). Supports every aspects
+	  of synchronization. Needs better time zone and
+	  vCard 2.0 / vCalendar 1.0 support. Also needs
+	  improved SIF support.

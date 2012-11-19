@@ -720,6 +720,28 @@ public class SOGoUtilities {
     				
     	return 1;
     }
+
+    /**
+     * 
+     * Get the main event category as String.
+     * 
+     * We consider that the main category is the first appearing in the comma separated list 
+     * 
+     * @param e
+     * @return The main category name as String or NULL if no category property can be read
+     */
+    public static String getMainCategory(com.funambol.common.pim.calendar.Event e, FunambolLogger log) {
+    	String s;
+    	if (e.getCategories() != null) {
+
+    		s = e.getCategories().getPropertyValueAsString();
+
+    		return s.split(",")[0];
+    	}
+    	else {
+    		return null;
+    	}
+    }
     
 	/**
 	 * 

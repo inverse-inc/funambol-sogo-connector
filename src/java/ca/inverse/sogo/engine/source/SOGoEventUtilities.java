@@ -53,7 +53,7 @@ public class SOGoEventUtilities {
 	 */	 
 	public static SyncItem addvEventSyncItem(SyncItem item, SOGoSyncSource source, SyncContext context, FunambolLogger log)  {
 		try {
-			String c_content, c_name, c_location, c_cycleinfo, c_title, location, tag;
+			String c_content, c_name, c_location, c_cycleinfo, c_title, location, tag, c_category;
 			PreparedStatement s;
 			TimeZone userTZ;
 			Event event;
@@ -70,6 +70,7 @@ public class SOGoEventUtilities {
 			c_name = SOGoKey.encodeString(item.getKey().getKeyAsString());			
 			c_classification = SOGoUtilities.getClassification(event);
 			c_isopaque = SOGoUtilities.getTransparency(event);
+			c_category = SOGoUtilities.getMainCategory(event, log);
 			c_cycleinfo = null;
 			c_iscycle = 0;
 
@@ -148,7 +149,9 @@ public class SOGoEventUtilities {
 			s.close();
 
 			// We now update the quick table
-			s = source.getDBConnection().prepareStatement("INSERT INTO " + location + "_quick" + " (c_name, c_uid, c_startdate, c_enddate, c_title, c_isallday, c_classification, c_status, c_priority, c_location, c_partmails, c_partstates, c_component, c_isopaque, c_iscycle, c_cycleinfo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			
+			s = source.getDBConnection().prepareStatement("INSERT INTO " + location + "_quick" + " (c_name, c_uid, c_startdate, c_enddate, c_title, c_isallday, c_classification, c_status, c_priority, c_location, c_partmails, c_partstates, c_component, c_isopaque, c_iscycle, c_cycleinfo, c_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			
 			s.setString(1, c_name);		  // c_cname
 			s.setString(2, c_name); 	  // c_uid
 			s.setLong(3, s_date);		  // c_startdate
@@ -165,6 +168,7 @@ public class SOGoEventUtilities {
 			s.setInt(14, c_isopaque);	  // c_isopaque
 			s.setInt(15, c_iscycle);      // c_iscycle
 			s.setString(16, c_cycleinfo); // c_cycleinfo
+			s.setString(17, c_category); // c_category
 			s.executeUpdate();
 			s.close();
 			
@@ -289,7 +293,7 @@ public class SOGoEventUtilities {
 	 */
 	public static SyncItem updatevEventSyncItem(SyncItem item, String tag, String collection, SOGoSyncSource source, SyncContext context, FunambolLogger log) throws SyncSourceException {
 		try {
-			String c_content, c_name, c_title, c_location, c_cycleinfo;
+			String c_content, c_name, c_title, c_location, c_cycleinfo, c_category;
 			PreparedStatement s;
 			TimeZone userTZ;
 			Event event;
@@ -306,6 +310,8 @@ public class SOGoEventUtilities {
             event = data.getCalendar().getEvent();
             c_title = event.getSummary().getPropertyValueAsString();
 			c_isopaque = SOGoUtilities.getTransparency(event);
+			c_category = SOGoUtilities.getMainCategory(event, log);
+
 
 			// If the event is tagged, we must untag it and check the ACLs.
 			if (tag != null && source.getCollectionForTag(tag) != null) {
@@ -422,7 +428,7 @@ public class SOGoEventUtilities {
 
 			// We now update the quick table
 			// FIXME consider other values
-			s = source.getDBConnection().prepareStatement("UPDATE " + collection + "_quick" + " SET c_startdate = ?, c_enddate = ?, c_title = ?, c_isallday = ?, c_location = ?, c_iscycle = ?, c_cycleinfo = ?, c_classification = ?, c_isopaque = ? WHERE c_name = ?");
+			s = source.getDBConnection().prepareStatement("UPDATE " + collection + "_quick" + " SET c_startdate = ?, c_enddate = ?, c_title = ?, c_isallday = ?, c_location = ?, c_iscycle = ?, c_cycleinfo = ?, c_classification = ?, c_isopaque = ?, c_category = ? WHERE c_name = ?");
 			s.setLong(1, s_date);					// c_startdate
 			s.setLong(2, e_date);					// c_endate
 			s.setString(3, c_title);				// c_title
@@ -432,7 +438,8 @@ public class SOGoEventUtilities {
 			s.setString(7, c_cycleinfo);			// c_cycleinfo
 			s.setInt(8, c_classification);			// c_classification
 			s.setInt(9, c_isopaque);				// c_isopaque
-			s.setString(10, c_name);
+			s.setString(10, c_category);			// c_category
+			s.setString(11, c_name);
 			s.executeUpdate();
 			s.close();
 

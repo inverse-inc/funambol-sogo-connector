@@ -52,6 +52,16 @@ public class SOGoUtilities {
 	// Constants
 	static final int RX = 1;
 	static final int TX = 2;
+	// Classification codes mapping
+	// iCal-vCard		; Funambol	; SOGo
+	// PUBLIC		; 0		; 0
+	// X-PERSONAL		; 1		; N/A
+	// PRIVATE		; 2		; 1
+	// CONFIDENTIAL		; 3		; 2
+	public static final Short SENSITIVITY_PRIVATE      = 2; // OlSensitivity.olPrivate
+	public static final Short SENSITIVITY_CONFIDENTIAL = 3; // OlSensitivity.olConfidential
+	public static final Short SOGO_SENSITIVITY_PRIVATE       = 1;
+	public static final Short SOGO_SENSITIVITY_CONFIDENTIAL  = 2;
 	
 	/**
 	
@@ -1121,21 +1131,16 @@ public class SOGoUtilities {
 	 * @return
 	 */
 	public static int getClassification(CalendarContent cc) {
-		int classification;
+		int classification, ac;
 		
 		classification = 0;
-		
 		if (cc.getAccessClass() != null) {
-			String ac;
-			
-			ac = cc.getAccessClass().getPropertyValueAsString();
-			
-			if ("PRIVATE".equalsIgnoreCase(ac))
-				classification = 1;
-			else if ("CONFIDENTIAL".equalsIgnoreCase(ac))
-				classification = 2;
+			ac = Integer.parseInt(cc.getAccessClass().getPropertyValueAsString());
+			if (ac == SENSITIVITY_PRIVATE)
+				classification = SOGO_SENSITIVITY_PRIVATE;
+			if (ac == SENSITIVITY_CONFIDENTIAL)
+				classification = SOGO_SENSITIVITY_CONFIDENTIAL;
 		}
-		
 		return classification;
 	}
 	
